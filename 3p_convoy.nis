@@ -1,0 +1,218 @@
+
+
+import("CameraShake.scar")
+EVENTS = {}
+
+
+EVENTS.IE_start_fade = function()
+	Util_SetIE( true )
+	FOW_RevealAll()
+	Fade_Start( 0, false )
+	CTRL.W40k_Letterbox( true, 0)
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.IE_convoy_escort_timer = function()
+	Util_SetIE( true )
+	
+	CTRL.Event_Delay( 7 )
+	CTRL.WAIT()
+	g_convoy.escort_timer = 1
+	Util_SetIE( false )
+end
+
+
+
+EVENTS.IE_chaplain_spawn = function()
+
+	local pcount = World_GetPlayerCount()
+	local center = World_Pos(0,0,0)
+	for k=1,pcount do 
+		Player_GetAllEntitiesNearPos(World_GetPlayerAt(k-1), "eg_all"..k, center, 1000)
+		Player_GetAllSquadsNearPos(World_GetPlayerAt(k-1), "sg_all"..k, center, 1000)
+		EGroup_DestroyAllEntities("eg_all"..k)
+		SGroup_DestroyAllSquads("sg_all"..k)
+		EGroup_DeSpawn("eg_all"..k)
+		SGroup_DeSpawn("sg_all"..k)
+	end
+	CTRL.Event_Delay( 1 )
+	CTRL.WAIT()
+	Fade_Start( 2, true )
+	
+
+	CTRL.CPath_Start("cam_intro_1", "start", "end")
+	CTRL.SUB()
+		local timer = 0.05
+		--variable "n" can have only the values 1 or 2
+		--1 is units
+		--2 is built
+		--variable[1][m][1] Blueprint of unit or "SquadBlueprint"
+		--variable[1][m][b] Setting spawn for squad
+		--variable[1][m][b][1] Marker spawn for unit or "Marker"
+		--variable[1][m][b][2] Marker for face unit or "Face"
+		--variable[1][m][b][3] Name for squad group or "SGroup"
+		--variable[1][m][b][4] Number of squads or "NumSquad"
+		--variable[1][m][b][5] Loadout in everyone squad or "Loadout"
+		--variable[1][m][b][6] Number of weapon in squad or "NumWeapon"
+		--variable[1][m][b][7] Weapon type in squad or "Weapon"
+		--variable[2][m][1] Bluepint of structure
+		--variable[2][m][b][1] Marker spawn for entity or "Marker"
+		--variable[2][m][b][2] Addon for structure
+----------------------------------------------------------------------------------------------------------------
+--------------------------------------Spawn marine base 1-------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+		for n=1,table.getn(g_marine_1) do
+		for m=1,table.getn(g_marine_1[n]) do
+		for b=3,table.getn(g_marine_1[n][m]) do
+		local tbl = g_marine_1[n][m][b]
+		if n == 1 then 
+			Util_CreateSquadsAtMarkerEx(g_Player4, tbl[3], g_marine_1[n][m][1], tbl[1], tbl[4],  tbl[5])
+			Cpu_LockSGroupAcrossPlayers(tbl[3])
+			if tbl[2] ~= nil then
+				SGroup_FaceMarker(tbl[3], tbl[2])
+			end
+			if tbl[7] ~= nil then
+				local squad = SGroup_GetSpawnedSquadAt(tbl[3], 1)
+				Squad_ForceUpgradeWeapons(squad, tbl[7], tbl[6])
+			end
+		end
+		if n == 2 then 
+			local pos = Marker_GetPosition(Marker_FromName(tbl[1], "basic_marker"))
+			local ent = Entity_Create(g_marine_1[n][m][1],g_Player4,pos)
+			EGroup_Create(tbl[3])
+			EGroup_Add(tbl[3], ent)
+			Entity_Spawn(ent)
+		end
+		end
+		end
+		end
+----------------------------------------------------------------------------------------------------------------
+--------------------------------------Spawn guard base 1--------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+
+		for n=1,table.getn(g_guard_1) do
+		for m=1,table.getn(g_guard_1[n]) do
+		for b=3,table.getn(g_guard_1[n][m]) do
+		local tbl = g_guard_1[n][m][b]
+		if n == 1 then 
+			Util_CreateSquadsAtMarkerEx(g_Player5, tbl[3], g_guard_1[n][m][1], tbl[1], tbl[4],tbl[5])
+			Cpu_LockSGroupAcrossPlayers(tbl[3])
+			if tbl[2] ~= nil then
+				SGroup_FaceMarker(tbl[3], tbl[2])
+			end
+			if tbl[7] ~= nil then
+				local squad = SGroup_GetSpawnedSquadAt(tbl[3], 1)
+				Squad_ForceUpgradeWeapons(squad, tbl[3], 1)
+			end
+		end
+		if n == 2 then 
+			local pos = Marker_GetPosition(Marker_FromName(tbl[1], "basic_marker"))
+			local ent = Entity_Create(g_guard_1[n][m][1],g_Player5,pos)
+			EGroup_Create(tbl[3])
+			EGroup_Add(tbl[3], ent)
+			Entity_Spawn(ent)
+		end
+		end
+		end
+		end
+----------------------------------------------------------------------------------------------------------------
+--------------------------------------Spawn guard base 1--------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+		for n=1,table.getn(g_ork_1) do
+		for m=1,table.getn(g_ork_1[n]) do
+		for b=4,table.getn(g_ork_1[n][m]) do
+		local tbl = g_ork_1[n][m][b]
+		if n == 1 then 
+			Util_CreateSquadsAtMarkerEx(g_Player6, tbl[3], g_ork_1[n][m][1], tbl[1], tbl[4],tbl[5])
+			Cpu_LockSGroupAcrossPlayers(tbl[3])
+			if tbl[2] ~= nil then
+				SGroup_FaceMarker(tbl[3], tbl[2])
+			end
+			if tbl[7] ~= nil then
+				local squad = SGroup_GetSpawnedSquadAt(tbl[3], 1)
+				Squad_ForceUpgradeWeapons(squad, tbl[3], 1)
+			end
+		end
+		if n == 2 then 
+			print("Condition access")
+			local pos = Marker_GetPosition(Marker_FromName(tbl[1], "basic_marker"))
+			local ent = Entity_Create(g_ork_1[n][m][1],g_Player6,pos)
+			EGroup_Create(tbl[3])
+			EGroup_Add(tbl[3], ent)
+			Entity_Spawn(ent)
+			if tbl[2] ~= nil then
+				EGroup_ForceAddOn(tbl[3],tbl[2])
+			end
+		end
+		end
+		end
+		end
+----------------------------------------------------------------------------------------------------------------
+--------------------------------------Spawn convoy--------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+		
+		for i=1,g_convoy.sq_count do
+			if i == 1 then 
+				g_convoy.sg[i] = "sg_convoy"
+				g_convoy.spawn_pos[i] = Marker_GetPosition(Marker_FromName("mkr_convoy_start", "basic_marker"))
+				Util_CreateSquadsAtPositionEx(g_Player4, g_convoy.sg[i], "space_marine_squad_land_raider", g_convoy.spawn_pos[i], 1, 1)
+				Util_CreateSquadsAtPositionEx(g_Player1, "sg_hero", "space_marine_squad_chaplain", g_convoy.spawn_pos[i], 1, 1)
+				g_convoy.cam_pos_move[i] = g_convoy.spawn_pos[i]
+				g_convoy.cam_pos_move[i] = World_Pos(g_convoy.cam_pos_move[i].x + 5, g_convoy.cam_pos_move[i].y, g_convoy.cam_pos_move[i].z)
+				Cpu_LockSGroupAcrossPlayers(g_convoy.sg[i])
+				Cmd_MoveToMarker(g_convoy.sg[i], "mkr_convoy_start_move")
+			else
+				local tab = g_convoy.escort_bp
+				local nbp = table.getn(tab)
+				local r = World_GetRand(1, nbp)
+				local w = World_GetRand(2, table.getn(tab[r]))
+				g_convoy.sg[i] = "sg_esc"..i
+				g_convoy.spawn_pos[i] = Spawn_Escort_PositionOffset(g_convoy.spawn_pos[1])
+				g_convoy.cam_pos_move[i] = g_convoy.spawn_pos[i]
+				g_convoy.cam_pos_move[i] = World_Pos(g_convoy.cam_pos_move[i].x + 5, g_convoy.cam_pos_move[i].y, g_convoy.cam_pos_move[i].z)
+				Util_CreateSquadsAtPositionEx(g_Player4, g_convoy.sg[i], tab[r][1], g_convoy.spawn_pos[i], 1, 1)
+				local csquad = SGroup_GetSpawnedSquadAt(g_convoy.sg[i], 1)
+				CTRL.Event_Delay(0.01)
+				CTRL.WAIT()
+				Squad_ForceUpgradeWeapons(csquad, tab[r][w], 1)
+				Cpu_LockSGroupAcrossPlayers(g_convoy.sg[i])
+			end
+		end
+		CTRL.Event_Delay(2)
+		CTRL.WAIT()
+		local ppos = Marker_GetPosition(Marker_FromName("mkr_convoy_cp_2", "basic_marker"))
+		Util_CreateSquadsAtPositionEx(g_Player6, "sg_ork", "ork_squad_slugga", ppos, 4, 10)
+		Cpu_LockSGroupAcrossPlayers("sg_ork")
+		Cmd_AttackMoveMarker("sg_ork", "mkr_convoy_cp_1")
+		--CTRL.Actor_PlaySpeech(ACT.Varnus, 1003132, 'speech/races/space_marines/chaplain/attack')
+		--CTRL.WAIT()
+		--CTRL.Actor_PlaySpeech(ACT.Varnus, 5300216)
+		--CTRL.WAIT()
+		--CTRL.Actor_PlaySpeech(ACT.Varnus, 5300219)
+		--CTRL.WAIT()
+		--CTRL.Actor_PlaySpeech(ACT.Varnus, 5300669)
+		--CTRL.WAIT()1015260
+		
+		CTRL.Actor_PlaySpeech(ACT.TacticalMarine, 406111, 'speech/races/space_marines/shared/spotting/ork')
+		CTRL.WAIT()
+		CTRL.Actor_PlaySpeech(ACT.Varnus, 1003160, 'speech/races/space_marines/chaplain/under_fire')
+		CTRL.WAIT()
+		CTRL.Actor_PlaySpeech(ACT.TacticalMarine, 405760, 'speech/races/space_marines/shared/selection')
+		CTRL.WAIT()
+		CTRL.Actor_PlaySpeech(ACT.Varnus, 1003161, 'speech/races/space_marines/chaplain/under_fire')
+		CTRL.WAIT()
+		Rule_Add(Rule_Convoy_Set_Way)
+	CTRL.END()
+	CTRL.WAIT()
+	
+	Fade_Start( 1, false )
+	CTRL.W40k_Letterbox( false, 2)
+		CPath_Blendout( 1 ) 
+		--FOW_Reset()
+	CTRL.WAIT()
+	Fade_Start( 2, true )
+end
+
+
+
