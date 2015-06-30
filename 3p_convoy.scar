@@ -17,6 +17,8 @@ function OnGameSetup()
 	g_Player6 = Setup_Player(5, "$209532", "chaos_marine_race", 2)
 	g_Player7 = Setup_Player(6, "$209532", "ork_race", 2)
 
+	
+	
 	Misc_PlayerTeamColor(g_Player1, "default_0")
 	Misc_PlayerTeamColor(g_Player2, "default_0")
 	Misc_PlayerTeamColor(g_Player3, "default_0")
@@ -510,6 +512,8 @@ end
 
 
 
-
+function Rule_Test()
+	i = 10
+end
 
 
